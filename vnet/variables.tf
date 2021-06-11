@@ -46,6 +46,12 @@ variable "dns_servers" {
     default = []
 }
 
+
+variable "nsg_name" {
+    description = "The name of the network security group"
+    type = string
+}
+
 variable "tags" {
     description = "The tag that will be used for the resource"
     type = map(string)

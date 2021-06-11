@@ -19,3 +19,12 @@ resource "azurerm_subnet" "subnet" {
     address_prefixes = "${var.subnet_prefixes}"
     
 }
+# Adding the network security resource
+
+resource "azurerm_network_security_group" "nsg" {
+  name = "${var.nsg_name}"
+  location = "${var.nsg_location}"
+  resource_group_name = var.nsg_location != null ? var.nsg_location : azurerm_resource_group.rg.location
+  tags = var.tags
+  
+}
