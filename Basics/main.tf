@@ -5,16 +5,42 @@ provider "azurerm" {
     }
   }
 }
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.resource_group_name}"
   location = "${var.rg_location}"
   tags = var.tag
 }
 
+resource "azurerm_storage_account" "tfstate_account" {
+  name = "${var.name_storage}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location = azurerm_resource_group.rg.location
+  account_tier = "Standard"
+  account_replication_type = "${var.replication_type}"
+  tags = var.tag
+}
+
+resource "azurerm_storage_container" "tfstate_container" {
+  name = "${var.container_name}"
+  storage_account_name = azurerm_storage_account.tfstate_account.name
+  container_access_type = "private"
+  
+}
+
+terraform {
+  backend "azurerm" {
+    resource_group_name  = azurerm_resource_group.rg.name
+    storage_account_name = azurerm_storage_account.tfstate_account.name
+    container_name       = azurerm_storage_container.tfstate_container.name
+    key                  = "${var.backend_key}"
+  }
+}
+
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "key_vault" {
-  name = "${var.name}"
+  name = "${var.key_vault_name}"
   location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   enabled_for_disk_encryption = true
