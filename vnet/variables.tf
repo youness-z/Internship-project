@@ -52,6 +52,12 @@ variable "nsg_name" {
     type = string
 }
 
+variable "nsg_location" {
+    description = "The location of the network security group"
+    type = string
+  
+}
+
 variable "tags" {
     description = "The tag that will be used for the resource"
     type = map(string)

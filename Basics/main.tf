@@ -9,7 +9,7 @@ provider "azurerm" {
 # Resource group that will contain all the infrastructure 
 resource "azurerm_resource_group" "rg" {
   name     = "${var.resource_group_name}"
-  location = "${var.rg_location}"
+  location = "${var.location}"
   tags = var.tag
 }
  # Backend configuration (storage account + storage container + backend)
@@ -22,7 +22,7 @@ resource "azurerm_storage_account" "tfstate_account" {
   tags = var.tag
 }
 
-resource "azurerm_storage_container" "tfstate_container" {
+resource "azurerm_storage_container" "tfstatecontainer" {
   name = "${var.container_name}"
   storage_account_name = azurerm_storage_account.tfstate_account.name
   container_access_type = "private"
@@ -45,6 +45,7 @@ resource "azurerm_key_vault" "key_vault" {
   name = "${var.key_vault_name}"
   location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  sku_name = var.sku_name
   enabled_for_disk_encryption = true
   tenant_id = data.azurerm_client_config.current.tenant_id
   access_policy {

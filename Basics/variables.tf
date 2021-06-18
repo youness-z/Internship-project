@@ -28,11 +28,19 @@ variable "container_name" {
 
 variable "backend_key" {
     description = "The key that will be used for the tfstate file"
+    default = "Key"
 }
 
 variable "key_vault_name" {
     description = "The name of the key vault"
     type = string
+}
+
+variable "sku_name" {
+    description = "Standard or Premium SKU"
+    type = string
+    default = "standard"
+  
 }
 variable "tag" {
     description = "The tag that will be used for created resources"
