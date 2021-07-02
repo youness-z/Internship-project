@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "rg" {
   tags = var.tag
 }
  # Backend configuration (storage account + storage container + backend)
-resource "azurerm_storage_account" "storage" {
+resource "azurerm_storage_account" "tfstate_account" {
   name = "${var.name_storage}"
   resource_group_name = azurerm_resource_group.rg.name
   location = azurerm_resource_group.rg.location
@@ -29,14 +29,14 @@ resource "azurerm_storage_container" "tfstatecontainer" {
   
 }
 
-terraform {
-  backend "azurerm" {
-    resource_group_name  = azurerm_resource_group.rg.name
-    storage_account_name = azurerm_storage_account.tfstate_account.name
-    container_name       = azurerm_storage_container.tfstate_container.name
-    key                  = "${var.backend_key}"
-  }
-}
+# terraform {
+#   backend "azurerm" {
+#     resource_group_name  = azurerm_resource_group.rg.name
+#     storage_account_name = azurerm_storage_account.tfstate_account.name
+#     container_name       = azurerm_storage_container.tfstate_container.name
+#     key                  = "${var.backend_key}"
+#   }
+# }
 
 # Azure key vault 
 data "azurerm_client_config" "current" {}

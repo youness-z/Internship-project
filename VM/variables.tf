@@ -190,35 +190,6 @@ variable "admin_password" {
 }
 
 
-data "azurerm_storage_account" "storage" {
-  count               = var.hub_storage_account_name != null ? 1 : 0
-  name                = var.hub_storage_account_name
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
-
-resource "random_password" "passwd" {
-  count       = var.disable_password_authentication != true || var.os_flavor == "windows" && var.admin_password == null ? 1 : 0
-  length      = var.random_password_length
-  min_upper   = 4
-  min_lower   = 2
-  min_numeric = 4
-  special     = false
-
-  keepers = {
-    admin_password = var.os_flavor
-  }
-}
-
-resource "random_string" "str" {
-  count   = var.enable_public_ip_address == true ? var.instances_count : 0
-  length  = 6
-  special = false
-  upper   = false
-  keepers = {
-    domain_name_label = var.virtual_machine_name
-  }
-}
-
 variable "hub_storage_account_name" {
   description = "The name of the hub storage account to store logs"
   default     = null
@@ -229,6 +200,12 @@ variable "random_password_length" {
   default     = 24
 }
 
+variable "virtual_machine_name" {
+    description = "The name of the virtual machine"
+    type = string
+    default = ""
+  
+}
 variable "tags" {
     description = "The tag that will be used for the resource"
     type = map(string)
