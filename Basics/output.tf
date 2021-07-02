@@ -11,11 +11,11 @@ output "resource_group_location" {
   
 }
 output "name_storage" {
-    value = azurerm_storage_account.tfstate_account.name
+    value = azurerm_storage_account.storage.name
   
 }
 output "storage_account_name" {
-    value = azurerm_storage_account.tfstate_account.name
+    value = azurerm_storage_account.storage.name
 }
 
 output "container_name" {
