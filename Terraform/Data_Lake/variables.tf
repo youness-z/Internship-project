@@ -1,6 +1,7 @@
 variable "data_lake_name" {
     description = "The name of the data lake storage"
     type = string
+    default = "data-lake"
 }
 
 
