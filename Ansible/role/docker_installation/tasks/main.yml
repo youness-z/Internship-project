@@ -1,0 +1,37 @@
+---
+# tasks file for docker_installation
+
+- name: Install aptitude
+  apt:
+    name: aptitude
+    state: latest
+    force_apt_get: yes 
+  notify: Update_cache
+  
+- name: Install packages - Set up the repository
+  apt: 
+    name: "{{ item }}"
+    state: latest
+  loop:  
+    - 'apt-transport-https'
+    - 'ca-certificates'
+    - 'curl'
+    - 'gnupg'
+    - 'lsb-release'
+  notify: Update_cache
+
+- name: Add Docker’s official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable                # bionic = $(lsb-release -cs)
+    state: present
+
+- name: Install docker-ce
+  apt:
+    name: docker-ce
+    state: latest
+  notify: Update_cache

@@ -33,8 +33,16 @@ resource "random_string" "str" {
 }
 
 ######## Network configuration part of the VM
+
+locals {
+  nsg_inbound_rules = { for idx, security_rule in var.nsg_inbound_rules : security_rule.name => {
+    idx : idx,
+    security_rule : security_rule,
+    }
+  }
+}
 data "azurerm_virtual_network" "vnet" {
-    name                       = var.vnet_name
+    name                       = "${var.vnet_name}"
     resource_group_name        = data.azurerm_resource_group.rg.name
 
 }
@@ -48,7 +56,7 @@ data "azurerm_subnet" "subnet" {
 }
 
 resource "azurerm_public_ip" "pip" {
-    count                   = var.enable_public_ip == true ? var.instances_count : 0
+    count                   = var.enable_public_ip_address == true ? var.instances_count : 0
     name                    = "${var.public_ip_name}"
     location                = data.azurerm_resource_group.rg.location
     resource_group_name     = data.azurerm_resource_group.rg.name
@@ -77,6 +85,36 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
+resource "azurerm_network_security_group" "nsg" {
+  name                = lower("nsg_${var.virtual_machine_name}_${data.azurerm_resource_group.rg.location}_in")
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  tags                = merge({ "ResourceName" = lower("nsg_${var.virtual_machine_name}_${data.azurerm_resource_group.rg.location}_in") }, var.tags, )
+}
+
+resource "azurerm_network_security_rule" "nsg_rule" {
+  for_each                    = local.nsg_inbound_rules
+  name                        = each.key
+  priority                    = 100 * (each.value.idx + 1)
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = each.value.security_rule.destination_port_range
+  source_address_prefix       = each.value.security_rule.source_address_prefix
+  destination_address_prefix  = element(concat(data.azurerm_subnet.subnet.address_prefixes, [""]), 0)
+  description                 = "Inbound_Port_${each.value.security_rule.destination_port_range}"
+  resource_group_name         = data.azurerm_resource_group.rg.name
+  network_security_group_name = azurerm_network_security_group.nsg.name
+  depends_on                  = [azurerm_network_security_group.nsg]
+}
+
+
+resource "azurerm_network_interface_security_group_association" "nsgassoc" {
+  count                     = var.instances_count
+  network_interface_id      = element(concat(azurerm_network_interface.nic.*.id, [""]), count.index)
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
 
 
 ##### Linux virtual machine configuration 
@@ -93,9 +131,9 @@ resource "azurerm_linux_virtual_machine" "linux_vm" {
   source_image_id            = var.source_image_id != null ? var.source_image_id : null
   provision_vm_agent         = true
   allow_extension_operations = true
-  dedicated_host_id          = var.dedicated_host_id
-  availability_set_id        = var.enable_vm_availability_set == true ? element(concat(azurerm_availability_set.aset.*.id, [""]), 0) : null
-  encryption_at_host_enabled = var.enable_encryption_at_host
+  # dedicated_host_id          = var.dedicated_host_id
+  # availability_set_id        = var.enable_vm_availability_set == true ? element(concat(azurerm_availability_set.aset.*.id, [""]), 0) : null
+  # encryption_at_host_enabled = var.enable_encryption_at_host
   tags                       = var.tags
   admin_ssh_key {
     username   = var.admin_username

@@ -13,7 +13,7 @@ variable "location" {
 
 variable "instances_count" {
     description = "The number of vm required"
-    type = integer
+    type = number
     default = 1
 }
 
@@ -31,8 +31,13 @@ variable "subnet_name" {
   
 }
 
+variable "nsg_inbound_rules" {
+  description = "List of network rules to apply to network interface."
+  default     = []
+}
 
-variable "enable_public_ip" {
+
+variable "enable_public_ip_address" {
     description = "enabling the association between a public ip and a NIC"
     default = null
     type = bool 
@@ -50,6 +55,18 @@ variable "public_ip_allocation_method" {
     type = string
     default = "Static"
   
+}
+
+variable "private_ip_address_allocation_type" {
+    description = "Private ip allocation type"
+    type = string
+    default = "Static"
+  
+}
+
+variable "private_ip_address" {
+  description = "The Static IP Address which should be used. This is valid only when `private_ip_address_allocation` is set to `Static` "
+  default     = null
 }
 variable "public_ip_sku" {
     description = "The sky of the ip address"
@@ -76,11 +93,6 @@ variable "dns_servers" {
   
 }
 
-variable "virtual_machine_name" {
-    description = "The name of the virtual machine"
-    type = string
-    default = ""
-}
 
 variable "source_image_id" {
   description = "The ID of an Image which each Virtual Machine should be based on"
@@ -144,7 +156,17 @@ variable "linux_distribution_list" {
     }
   }
 }
+variable "virtual_network_name" {
+    description = "virtual network name"
+    type = string
+    
+  
+}
 
+variable "os_flavor" {
+  description = "Specify the flavor of the operating system image to deploy Virtual Machine. Valid values are `windows` and `linux`"
+  default     = "windows"
+}
 variable "virtual_machine_size" {
   description = "The Virtual Machine SKU for the Virtual Machine, Default is Standard_A2_V2"
   default     = "Standard_A2_v2"

@@ -15,6 +15,22 @@ variable "rg_name" {
     type = string
 }
 
+variable "instance_pool_name" {
+  description = "The name of the instance pool "
+  type = string
+  
+}
+
+variable "databricks_node_type" {
+  description = "The type of the databricks node"
+  type = string
+  
+}
+
+variable "databricks_spark_version" {
+  description = "The spark version for the databricks "
+  
+}
 variable "tags" {
     description = "The tags that will be used for the created resource"
     type = map(string)

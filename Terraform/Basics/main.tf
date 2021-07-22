@@ -29,15 +29,6 @@ resource "azurerm_storage_container" "tfstatecontainer" {
   
 }
 
-# terraform {
-#   backend "azurerm" {
-#     resource_group_name  = azurerm_resource_group.rg.name
-#     storage_account_name = azurerm_storage_account.tfstate_account.name
-#     container_name       = azurerm_storage_container.tfstate_container.name
-#     key                  = "${var.backend_key}"
-#   }
-# }
-
 # Azure key vault 
 data "azurerm_client_config" "current" {}
 

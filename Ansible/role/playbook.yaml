@@ -1,0 +1,10 @@
+- name: Install docker
+  hosts: Jenkins_server
+  remote_user: root
+  become: yes 
+
+  roles:
+  - docker_installation
+
+
+  
