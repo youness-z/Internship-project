@@ -6,13 +6,13 @@ provider "azurerm" {
   }
 }
 
-# Resource group that will contain all the infrastructure 
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.resource_group_name}"
   location = "${var.location}"
   tags = var.tag
 }
- # Backend configuration (storage account + storage container + backend)
+ 
 resource "azurerm_storage_account" "tfstate_account" {
   name = "${var.name_storage}"
   resource_group_name = azurerm_resource_group.rg.name
